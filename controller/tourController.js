@@ -72,9 +72,17 @@ exports.updateTours = async (req, res) => {
   }
 };
 
-exports.deleteTours = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: null,
-  });
+exports.deleteTours = async (req, res) => {
+  try{
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      status: "success",
+      data: null,
+    });
+  }catch(err){
+    res.status(400).json({
+      status: "Faild",
+      message: "Invalid data send",
+    });
+  }
 };
