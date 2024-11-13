@@ -2,8 +2,21 @@ const Tour = require("../models/tourModel");
 
 exports.getAllTours = async (req, res) => {
   try {
-    console.log(req.query)
-    const tours = await Tour.find();
+    //build query
+    const queryObj = {...req.query};
+    const excludedField = ['page','sort','limit','fields'];
+    excludedField.map(el => delete queryObj[el]);
+
+    const query = Tour.find(queryObj);
+
+    // const query = await Tour.find()
+    //   .where("duration")
+    //   .equals(5)
+    //   .where("difficulty")
+    //   .equals("easy");
+
+    const tours = await query;
+
     res.status(200).json({
       status: "success",
       result: tours.length,
@@ -48,7 +61,7 @@ exports.createTours = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: "Faild",
-      message: err
+      message: err,
     });
   }
 };
@@ -62,7 +75,7 @@ exports.updateTours = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: {
-        tour
+        tour,
       },
     });
   } catch (err) {
@@ -74,13 +87,13 @@ exports.updateTours = async (req, res) => {
 };
 
 exports.deleteTours = async (req, res) => {
-  try{
+  try {
     const tour = await Tour.findByIdAndDelete(req.params.id);
     res.status(200).json({
       status: "success",
       data: null,
     });
-  }catch(err){
+  } catch (err) {
     res.status(400).json({
       status: "Faild",
       message: "Invalid data send",
