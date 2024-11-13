@@ -1,54 +1,75 @@
-const Tour = require('../models/tourModel');
+const Tour = require("../models/tourModel");
 
-
-exports.getAllTours = (req, res) => {
-  // res.status(200).json({
-  //   status: "success",
-  //   requestedAt: req.requestTime,
-  //   result: tours.length,
-  //   data: {
-  //     tours: tours,
-  //   },
-  // });
-};
-
-exports.getTours = (req, res) => {
-  const id = req.params.id * 1;
-  // const tour = tours.find((el) => el.id === id);
-
-  // res.status(200).json({
-  //   status: "success",
-  //   result: tours.length,
-  //   data: {
-  //     tour,
-  //   },
-  // });
-};
-
-exports.createTours = async (req, res) => {
-  try{
-    const newTour = await Tour.create(req.body);
-    res.status(201).json({
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+    res.status(200).json({
       status: "success",
-      data:{
-        tour: newTour
-      }
+      result: tours.length,
+      data: {
+        tours,
+      },
     });
-  }catch(err){
+  } catch (err) {
     res.status(400).json({
       status: "Faild",
-      message: "Invalid data send"
-    })
+      message: "Invalid data send",
+    });
   }
 };
 
-exports.updateTours = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour: "updatin tours hire",
-    },
-  });
+exports.getTours = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    res.status(200).json({
+      status: "success",
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "Faild",
+      message: "Invalid data send",
+    });
+  }
+};
+
+exports.createTours = async (req, res) => {
+  try {
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: "success",
+      data: {
+        newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "Faild",
+      message: "Invalid data send",
+    });
+  }
+};
+
+exports.updateTours = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: "success",
+      data: {
+        tour
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "Faild",
+      message: "Invalid data send",
+    });
+  }
 };
 
 exports.deleteTours = (req, res) => {
