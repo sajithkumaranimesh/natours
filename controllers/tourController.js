@@ -44,18 +44,24 @@ exports.getAllTours = async (req, res) => {
   }
 };
 
-exports.getTour = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id * 1;
+exports.getTour = async (req, res) => {
+  console.log(req.params.id);
 
-  // const tour = tours.find(el => el.id === id);
+  try {
+    const tour = await Tour.findById(req.params.id);
 
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour
-  //   }
-  // });
+    res.status(200).json({
+      status: "success",
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "FAILD",
+      messag: "Invalid data send!",
+    });
+  }
 };
 
 exports.createTour = async (req, res) => {
