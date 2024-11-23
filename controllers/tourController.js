@@ -22,17 +22,26 @@ const Tour = require("../models/tourModel.js");
 //   next();
 // };
 
-exports.getAllTours = (req, res) => {
+exports.getAllTours = async (req, res) => {
   console.log(req.requestTime);
 
-  res.status(200).json({
-    status: "success",
-    requestedAt: req.requestTime,
-    // results: tours.length,
-    // data: {
-    //   tours
-    // }
-  });
+  try {
+    const tours = await Tour.find();
+
+    res.status(200).json({
+      status: "success",
+      requestedAt: req.requestTime,
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "FAILD",
+      messag: "Invalid data send!",
+    });
+  }
 };
 
 exports.getTour = (req, res) => {
@@ -64,7 +73,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: "FAILD",
-      messag: err,
+      messag: "Invalid data send!",
     });
   }
 };
