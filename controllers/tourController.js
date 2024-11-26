@@ -43,23 +43,34 @@ exports.getAllTours = async (req, res) => {
     // exclude the field
     // build query
     // 1A) filtering
-    const queryObj = {...req.query};
-    const excludeFields = ['page','sort','limit','fields']
-    excludeFields.forEach(el => delete queryObj[el]);
+    const queryObj = { ...req.query };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
 
     // 1B) advanced filtering
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     console.log(JSON.parse(queryStr));
-
 
     let query = Tour.find(JSON.parse(queryStr));
 
     // 2) Sorting
-    if(req.query.sort){
-      const sortBy = req.query.sort.split(',').join(' ');
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
       console.log(sortBy);
       query = query.sort(sortBy);
+    }
+
+    // Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 3;
+    const skip = (page - 1) * limit;
+    // page=2&limit=10,  1-10, page 1,  11-20, page 2,  21-30 page 3
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error("This page dose not exists");
     }
 
     const tours = await query;
