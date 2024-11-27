@@ -5,6 +5,13 @@ const handleCastErrorDB = err => {
   return new AppError(message, 400);
 }
 
+const handleDublicateFieldsDB = err => {
+  const value = err.errmsg.match(/(["'])(\\?.)*?\1/);
+  console.log(value);
+  const message = `Dublicate field value : ${value}. Please use anothe value!`;
+  return new AppError(message, 400);
+}
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -43,6 +50,9 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === "CastError") {
       error = handleCastErrorDB(error);
+    }
+    if (error.code === 11000) {
+      error = handleDublicateFieldsDB(error);
     }
       
     sendErrorProd(error, res);
