@@ -1,5 +1,5 @@
 const Tour = require("../models/tourModel.js");
-const APIFeatures = require('../utils/apiFeature.js')
+const APIFeatures = require("../utils/apiFeature.js");
 
 // exports.checkID = (req, res, next, val) => {
 //   console.log(`Tour id is: ${val}`);
@@ -22,7 +22,6 @@ const APIFeatures = require('../utils/apiFeature.js')
 //   }
 //   next();
 // };
-
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = "5";
