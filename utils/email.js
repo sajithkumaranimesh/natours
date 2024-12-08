@@ -14,12 +14,12 @@ const sendEmail = async (options) => {
 
   // 2) Define the email options
   const mailOptions = {
-    from: 'admin <admin@gmail.com>',
+    from: "admin <admin@gmail.com>",
     to: options.email,
     subject: options.subject,
     text: options.message,
     // html:
-  }
+  };
 
   // 3) Actually send the email
   await transporter.sendMail(mailOptions);
