@@ -31,11 +31,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please confirm your password"],
     validate: {
-      // This only work on CREATE and SAVE!
       validator: function (el) {
         return el === this.password;
       },
-      message: "Password are not the same!",
+      message: "Passwords are not the same!",
     },
   },
   passwordChangedAt: Date,
@@ -44,22 +43,19 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  // Only run this function if password was actually modified
   if (!this.isModified("password")) return next();
 
-  // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
-
-  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
+  next();
 });
 
-userSchema.pre('save', function(next){
-  if(!this.isModified('password') || this.isNew) return next();
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
   next();
-})
+});
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -74,11 +70,8 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
       this.passwordChangedAt.getTime() / 1000,
       10
     );
-    console.log(changedTimestamp, JWTTimestamp);
     return JWTTimestamp < changedTimestamp;
   }
-
-  // false mean not change
   return false;
 };
 
@@ -91,9 +84,9 @@ userSchema.methods.createPasswordResetToken = function () {
     .digest("hex");
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  
 
-  console.log("resetToken", resetToken, "hashedToken", this.passwordResetToken);
+  console.log("Reset Token (Raw):", resetToken);
+  console.log("Reset Token (Hashed):", this.passwordResetToken);
   return resetToken;
 };
 
